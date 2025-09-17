@@ -1,0 +1,4 @@
+{"llm_provider": "xai", 
+"model": "grok-code-fast-1", 
+"api_base": "https://api.x.ai/v1",
+"max_tokens": 500}

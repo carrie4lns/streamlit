@@ -3,6 +3,7 @@ import requests
 from pydantic import BaseModel
 import os
 import json
+from dotenv import load_dotenv
 
 # Config Layer
 class LLMConfig(BaseModel):
@@ -16,11 +17,16 @@ class LLMConfig(BaseModel):
 @st.cache_data
 def load_config():
     config_path = "config.json"
+    load_dotenv() # Load environment variables from .env file if present
+
     if os.path.exists(config_path):
         with open(config_path, "r") as f:
-            return LLMConfig(**json.load(f))
+            config_data = json.load(f)
+            # Ensure XAI_API_KEY from .env overrides config.json (for security)
+            config_data["api_key"] = os.getenv("XAI_API_KEY") # todo fix for when not XAI config
+            return LLMConfig(**config_data)
     else:
-        # Fallback to env vars
+        # Fallback to environment variables with hardcoded defaults
         return LLMConfig(
             api_key=os.getenv("XAI_API_KEY"),
             model=os.getenv("LLM_MODEL", "grok-4"),
